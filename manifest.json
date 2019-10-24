@@ -1,0 +1,16 @@
+{
+  "name": "Super Extension de ouf",
+  "version": "1.0",
+  "description": "How to build my extension google",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["contentScript.js"],
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    "content.js"
+  ],
+  "manifest_version": 2
+}
