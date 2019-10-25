@@ -1,42 +1,38 @@
-console.log("Hello from your Chrome extension!", window.RTCPeerConnection)
-let origPeerConnection = window.RTCPeerConnection;
-window.myPeerConnections = [];
+if (window.location.hostname !== 'viewer.staging-5em2ouy-wwdx6yz432y36.eu-2.platformsh.site' && window.location.hostname !== 'viewer.bonjour.io') {
+  let origPeerConnection = window.RTCPeerConnection;
+  window.myPeerConnections = [];
 
-/**
- * In order to keep this code as simple as possible, we push RTCPeerConnection
- * objects to a global array whenever they are instanciated. This allows us to
- * call the original 'getStats' function on every RTCPeerConnection we find in
- * this array.
- */
-if (origPeerConnection) {
-  window.RTCPeerConnection.prototype.constructor = (configuration) => {
-    console.log('la')
-    const pc = new origPeerConnection(configuration);
+  /**
+   * In order to keep this code as simple as possible, we push RTCPeerConnection
+   * objects to a global array whenever they are instanciated. This allows us to
+   * call the original 'getStats' function on every RTCPeerConnection we find in
+   * this array.
+   */
+  if (origPeerConnection) {
+    let newPeerConnection = function(configuration) {
+      console.log('new PeerCo')
+      const pc = new origPeerConnection(configuration);
 
-    window.myPeerConnections.push(pc);
-    console.log(window.myPeerConnections);
-    return pc;
+      window.myPeerConnections.push(pc);
+
+      return pc;
+    };
+
+    window.RTCPeerConnection = newPeerConnection;
+    Object.keys(origPeerConnection).forEach(x => {
+      window.RTCPeerConnection[x] = origPeerConnection[x];
+    });
+    window.RTCPeerConnection.prototype = origPeerConnection.prototype;
   }
-
-  Object.keys(origPeerConnection).forEach(x => {
-    window.RTCPeerConnection[x] = origPeerConnection[x];
-  });
-  window.RTCPeerConnection.prototype = origPeerConnection.prototype;
-  console.log(window.myPeerConnections)
 }
 
 myGetStats = () => {
-
-
-
   window.myPeerConnections.forEach((pc) => {
     if (pc.connectionState !== 'connected') {
       return;
     }
-
     pc.getStats().then((reports) => {
       let type = null;
-
       switch (pc.localDescription.type) {
         case 'offer':
           console.log('---- Publisher -----');
@@ -49,7 +45,6 @@ myGetStats = () => {
         default:
           break;
       }
-
       reports.forEach((report) => {
         switch(report.type) {
           case 'outbound-rtp':
