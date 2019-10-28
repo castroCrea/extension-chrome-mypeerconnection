@@ -10,7 +10,7 @@ if (window.location.hostname !== 'viewer.staging-5em2ouy-wwdx6yz432y36.eu-2.plat
    */
   if (origPeerConnection) {
     let newPeerConnection = function(configuration) {
-      console.log('new PeerCo')
+      console.log('[bonjour dev extension] New RTPeerConnection, keeping a reference in window.myPeerConnections');
       const pc = new origPeerConnection(configuration);
 
       window.myPeerConnections.push(pc);
@@ -23,6 +23,8 @@ if (window.location.hostname !== 'viewer.staging-5em2ouy-wwdx6yz432y36.eu-2.plat
       window.RTCPeerConnection[x] = origPeerConnection[x];
     });
     window.RTCPeerConnection.prototype = origPeerConnection.prototype;
+  } else {
+    console.log('[bonjour dev extension] Failed to find window.RTCPeerConnection, cannot overload');
   }
 }
 

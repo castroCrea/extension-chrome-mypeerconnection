@@ -4,8 +4,9 @@
   "description": "Bonjour Peer connection Tester",
   "content_scripts": [
     {
+      "run_at":    "document_start",
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["contentScript.js"],
+      "js": ["injectScript.js"],
       "all_frames": true
     }
   ],
